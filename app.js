@@ -38,8 +38,8 @@ app.post("/login", (req, res) => {
   const { phone, password } = req.body;
   const hashpass = btoa(btoa(password));
 
-  // var decodedStringAtoB = atob(atob("ZEdsdWEyRXlNRGM1"));
-  // console.log(decodedStringAtoB);
+  var decodedStringAtoB = atob(atob("ZEdsdWEyRXlNRGM1"));
+  console.log(decodedStringAtoB);
 
   const query = "SELECT * FROM users WHERE phone_number = ?";
   pool.query(query, [phone], (err, result) => {
@@ -130,10 +130,11 @@ app.post("/mocktest_category", (req, res) => {
   });
 });
 
-app.post("/tests/:mockTest_id", (req, res) => {
-  const { mockTest_id } = req.params;
-  const query = "SELECT * FROM mock_tests WHERE test_category_id=?"; // Assuming your table is named 'banners'
-  pool.query(query, [mockTest_id], (err, result) => {
+app.post("/tests/:courseId/:mockTest_id", (req, res) => {
+  const { courseId, mockTest_id } = req.params;
+  const query =
+    "SELECT * FROM mock_tests WHERE test_category_id=? AND course_id=?"; // Assuming your table is named 'banners'
+  pool.query(query, [mockTest_id, courseId], (err, result) => {
     if (err) {
       console.error("Error executing query:", err);
       res.status(500).json({ error: "Internal Server Error" });
@@ -143,8 +144,8 @@ app.post("/tests/:mockTest_id", (req, res) => {
   });
 });
 
-app.post("/tests/:mockTest_id/:mockTest_id_test_id", (req, res) => {
-  const { mockTest_id, mockTest_id_test_id } = req.params;
+app.post("/tests/:courseId/:mockTest_id/:mockTest_id_test_id", (req, res) => {
+  const { courseId, mockTest_id, mockTest_id_test_id } = req.params;
   const query = "SELECT * FROM test_questions WHERE mock_test_id=?"; // Assuming your table is named 'banners'
   pool.query(query, [mockTest_id_test_id], (err, result) => {
     if (err) {
@@ -186,6 +187,19 @@ app.get("/ebooks", (req, res) => {
   const { files } = req.body;
   const query = "SELECT * FROM ebooks";
   pool.query(query, (err, result) => {
+    if (err) {
+      console.error("Error executing query:", err);
+      res.status(500).json({ error: "Internal Server Error" });
+      return;
+    }
+    res.json(result);
+  });
+});
+
+app.post("/notes/:courseId", (req, res) => {
+  const { courseId } = req.params;
+  const query = "SELECT * FROM pdf_notes WHERE course_id= ? ";
+  pool.query(query, [courseId], (err, result) => {
     if (err) {
       console.error("Error executing query:", err);
       res.status(500).json({ error: "Internal Server Error" });
