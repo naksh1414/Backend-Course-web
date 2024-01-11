@@ -13,7 +13,11 @@ const PORT = process.env.PORT || 8000;
 //     credentials: true,
 
 // }));
-app.use(cors());
+app.use(cors({
+  origin: 'https://sitelms.gogetskill.in',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true, 
+}));
 app.use(bodyParser.json());
 
 const pool = mysql.createPool({
