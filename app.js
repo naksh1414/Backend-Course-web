@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 8000;
 
 app.use(
   cors({
-    origin: ["https://sitelms.gogetskill.in", "https://www.youtube.com","http://localhost:8000"],
+    origin: ["https://sitelms.gogetskill.in", "https://www.youtube.com","http://localhost:8000","http://localhost:5173"],
     methods: ["POST", "GET"],
     credentials: true,
   })
