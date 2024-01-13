@@ -7,17 +7,14 @@ const md5 = require("blueimp-md5");
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-// app.use(cors({
-//   origin: ["http//localhost:5173"],
-//     methods: ["POST", "GET"],
-//     credentials: true,
-
-// }));
-app.use(cors({
-  origin: 'https://sitelms.gogetskill.in',
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  credentials: true, 
-}));
+app.use(
+  cors({
+    origin: ["https://sitelms.gogetskill.in", "https://www.youtube.com"],
+    methods: ["POST", "GET"],
+    credentials: true,
+  })
+);
+app.use(cors());
 app.use(bodyParser.json());
 
 const pool = mysql.createPool({
@@ -42,8 +39,8 @@ app.post("/login", (req, res) => {
   const { phone, password } = req.body;
   const hashpass = btoa(btoa(password));
 
-  var decodedStringAtoB = atob(atob("ZEdsdWEyRXlNRGM1"));
-  console.log(decodedStringAtoB);
+  // var decodedStringAtoB = atob(atob(password));
+  // console.log(decodedStringAtoB);
 
   const query = "SELECT * FROM users WHERE phone_number = ?";
   pool.query(query, [phone], (err, result) => {
@@ -54,7 +51,7 @@ app.post("/login", (req, res) => {
     }
     if (result.length > 0) {
       const user = result[0];
-      if (user.password === hashpass) {
+      if (user.password == hashpass) {
         res.json({
           success: true,
           username: user.username,
@@ -121,9 +118,9 @@ app.get("/banners", (req, res) => {
     res.json(result);
   });
 });
+
 app.post("/mocktest_category", (req, res) => {
   const query = "SELECT * FROM mock_test_category"; // Assuming your table is named 'banners'
-
   pool.query(query, (err, result) => {
     if (err) {
       console.error("Error executing query:", err);
@@ -203,6 +200,20 @@ app.get("/ebooks", (req, res) => {
 app.post("/notes/:courseId", (req, res) => {
   const { courseId } = req.params;
   const query = "SELECT * FROM pdf_notes WHERE course_id= ? ";
+
+  pool.query(query, [courseId], (err, result) => {
+    if (err) {
+      console.error("Error executing query:", err);
+      res.status(500).json({ error: "Internal Server Error" });
+      return;
+    }
+    res.json(result);
+  });
+});
+
+app.post("/material/:courseId/recorded_videos", (req, res) => {
+  const { courseId } = req.params;
+  const query = "SELECT * FROM youtube_videos WHERE course_id=?"; // Assuming your table is named 'banners'
   pool.query(query, [courseId], (err, result) => {
     if (err) {
       console.error("Error executing query:", err);
