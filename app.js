@@ -226,8 +226,8 @@ app.post("/material/:courseId/recorded_videos", (req, res) => {
 
 app.get("/pdf-proxy/:courseId", async (req, res) => {
   const { courseId } = req.params;
- // Assuming you have a 'pdf_notes' table with a 'file_url' column
-  const query = "SELECT file_url FROM pdf_notes WHERE course_id = ?";
+  // Assuming you have a 'pdf_notes' table with a 'file_url' column
+  const query = "SELECT file FROM pdf_notes WHERE course_id = ?";
   pool.query(query, [courseId], (err, result) => {
     if (err) {
       console.error("Error executing query:", err);
@@ -237,7 +237,7 @@ app.get("/pdf-proxy/:courseId", async (req, res) => {
 
     if (result.length > 0) {
       const pdfUrl = result[0].file;
-      res.json({ pdfUrl });
+      res.redirect(pdfUrl);
     } else {
       res.status(404).json({ error: "PDF not found for the given courseId" });
     }
